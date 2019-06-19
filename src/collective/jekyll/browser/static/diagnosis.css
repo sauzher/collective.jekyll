@@ -32,6 +32,11 @@
   color: white;
 }
 
+#content .ignored  span:first-child{
+  margin-right: 0.5em;
+  font-variant: super;
+}
+
 #content .diagnosis dd {
   margin: 0;
   border-radius: 0 0.5em 0.5em 0.5em;
@@ -105,6 +110,11 @@ dl.menu .menuHandle {
 
 .symptomTitle {
   font-weight: bold;
+  margin-right: 0.5em;
+}
+
+#content .symptom a.ignore {
+  font-variant: super;
 }
 
 .symptomHelp {

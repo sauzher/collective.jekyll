@@ -1,6 +1,13 @@
 <?xml version="1.0"?>
 <registry>
   <records interface="collective.jekyll.interfaces.IJekyllSettings" />
+  <record name="collective.jekyll.symptoms.IdLengthSymptom.maximum">
+        <field type="plone.registry.field.Int">
+            <title>Id : maximum number of characters.</title>
+            <min>20</min>
+        </field>
+        <value>5</value>
+  </record>
   <record name="collective.jekyll.symptoms.TitleLengthSymptom.maximum">
         <field type="plone.registry.field.Int">
             <title>Title : maximum number of siginificant words.</title>
