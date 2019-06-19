@@ -49,4 +49,8 @@ setup(name='collective.jekyll',
               'pytest',
               'gocept.pytestlayer',
           ]),
+      entry_points='''
+            [z3c.autoinclude.plugin]
+            target=plone
+          ''',
       )
