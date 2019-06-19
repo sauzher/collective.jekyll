@@ -91,6 +91,7 @@ class SymptomsVocabulary(object):
                                         title=symptomClass.title))
         return SimpleVocabulary(items)
 
+
 SymptomsVocabulary = SymptomsVocabulary()
 
 
@@ -109,6 +110,38 @@ class IdFormatSymptom(SymptomBase):
             self.description = Message(
                 symptom_description,
                 mapping={'start': match.group()}
+            )
+
+
+class IdLengthSymptom(SymptomBase):
+
+    title = _(u"Id length")
+
+    @property
+    def help(self):
+        symptom_help = _(
+            u"Id should not be more than  ${maximum} chars long.")
+        return Message(
+            symptom_help,
+            mapping={'maximum': self.maximum}
+        )
+
+    @property
+    def maximum(self):
+        return int(self._registry.get('%s.maximum' % self.name, 20))
+
+    def _update(self):
+        id = self.context.getId()
+        self.status = not len(str(id)) > self.maximum
+        if not self.status:
+            self.status = False
+            symptom_description = _(
+                u"Id is too long. "
+                u"It should have at most ${maximum} characters.")
+
+            self.description = Message(
+                symptom_description,
+                mapping={'maximum': self.maximum}
             )
 
 
@@ -250,7 +283,8 @@ class BodyTextPresentSymptom(SymptomBaseWithCache):
     help = _(u"Body text should have content.")
 
     def _update(self):
-        cooked = self.cache.setdefault('cooked_body', self.context.CookedBody(stx_level=2).strip())
+        cooked = self.cache.setdefault(
+            'cooked_body', self.context.CookedBody(stx_level=2).strip())
         self.status = len(cooked)
         if not self.status:
             self.description = _(u"Body text does not have content.")
@@ -264,9 +298,9 @@ class SpacesInBodySymptom(SymptomBaseWithCache):
     def _update(self):
         self.status = True
         cooked = self.cache.setdefault('cooked_body',
-                self.context.CookedBody(stx_level=2).strip())
+                                       self.context.CookedBody(stx_level=2).strip())
         soup = self.cache.setdefault('cooked_body_soup',
-                BeautifulSoup(cooked.decode('utf-8')))
+                                     BeautifulSoup(cooked.decode('utf-8')))
         child_count = 0
         for child in soup.children:
             child_count += 1
@@ -277,11 +311,12 @@ class SpacesInBodySymptom(SymptomBaseWithCache):
         if child_count != 0 and empty_or_spaces(child.text):
             self.status = False
             if child.previousSibling:
-                self.description = _(u"Body text ends with empty tags or BR.")
+                self.description = _(
+                    u"Body text ends with empty tags or BR.")
 
 
 def empty_or_spaces(text):
-    #get rid of non breaking spaces
+    # get rid of non breaking spaces
     text = text.replace(u'\xa0', u' ').strip()
     return not bool(text)
 
@@ -308,9 +343,9 @@ class LinksInBodySymptom(SymptomBaseWithCache):
     def _update(self):
         minimum = self.minimum
         cooked = self.cache.setdefault('cooked_body',
-                self.context.CookedBody(stx_level=2).strip())
+                                       self.context.CookedBody(stx_level=2).strip())
         soup = self.cache.setdefault('cooked_body_soup',
-                BeautifulSoup(cooked.decode('utf-8')))
+                                     BeautifulSoup(cooked.decode('utf-8')))
         links = soup.find_all('a')
         self.status = len(links) >= minimum
         if not self.status:

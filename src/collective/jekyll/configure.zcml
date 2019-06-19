@@ -26,7 +26,7 @@
       description="Installs the collective.jekyll package"
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
-   
+
   <i18n:registerTranslations directory="locales" />
 
   <adapter
@@ -49,7 +49,7 @@
      name="collective.jekyll.SymptomsVocabulary" />
 
    <!-- symptoms -->
-  
+
   <subscriber
      for="Products.CMFCore.interfaces.IMinimalDublinCore"
      provides=".interfaces.ISymptom"
@@ -64,6 +64,11 @@
      for="Products.CMFCore.interfaces.IMinimalDublinCore"
      provides=".interfaces.ISymptom"
      factory=".symptoms.TitleFormatSymptom" />
+
+  <subscriber
+     for="Products.CMFCore.interfaces.IMinimalDublinCore"
+     provides=".interfaces.ISymptom"
+     factory=".symptoms.IdLengthSymptom" />
 
   <subscriber
      for="Products.Archetypes.interfaces.IExtensibleMetadata"

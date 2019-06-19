@@ -17,7 +17,7 @@ class IgnoredNames(object):
 
     def _getNamesDict(self):
         try:
-           annotations = IAnnotations(self.context)
+            annotations = IAnnotations(self.context)
         except ComponentLookupError:
             return {}
         return annotations.setdefault(
