@@ -1,9 +1,9 @@
-from zope.interface import implements
-from zope.component import subscribers
-
+# -*- coding: utf-8 -*-
 from collective.jekyll.interfaces import IDiagnosis
 from collective.jekyll.interfaces import ISymptom
 from collective.jekyll.symptoms import Status
+from zope.component import subscribers
+from zope.interface import implements
 
 
 class Diagnosis(Status):
@@ -43,7 +43,7 @@ class Diagnosis(Status):
             self._byTitle[symptom.title] = symptom
             self._byName[symptom.name] = symptom
         self._ignored_symptoms = [
-            symptom 
+            symptom
             for symptom in self._symptoms
             if symptom.isIgnored
         ]
