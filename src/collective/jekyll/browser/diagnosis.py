@@ -1,19 +1,26 @@
+# -*- coding: utf-8 -*-
 from AccessControl import getSecurityManager
-
-from zope.i18n import translate
-
-from Products.Five import BrowserView
 from Products.CMFPlone.PloneBatch import Batch
-
-from plone.app.layout.viewlets.common import ViewletBase
-
-from plone.memoize import view
-
+from Products.Five import BrowserView
+from collective.jekyll import IGNORE_PERMISSION
+from collective.jekyll import jekyllMessageFactory as _
 from collective.jekyll.browser.filter import DiagnosisFilter
 from collective.jekyll.interfaces import IDiagnosis
 from collective.jekyll.interfaces import IIgnoredSymptomNames
-from collective.jekyll import jekyllMessageFactory as _
-from collective.jekyll import IGNORE_PERMISSION
+from plone.app.layout.viewlets.common import ViewletBase
+from plone.memoize import view
+from zope.i18n import translate
+
+from plone.protect.utils import addTokenToUrl
+
+
+def protecturl(func):
+    """ decorator Adding a CSRF token to your links
+    """
+    def wrap(*args, **kw):
+        url = func(*args, **kw)
+        addTokenToUrl(url)
+    return wrap
 
 
 class DiagnosisViewlet(ViewletBase):
@@ -106,6 +113,7 @@ class SymptomView(BrowserView):
             name=self.context.name,
             action=action,
         )
+        url = addTokenToUrl(url)
         return u'<a class="ignore" href="{url}">{text}</a>'.format(
             url=url,
             text=link_text,

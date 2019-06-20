@@ -8,8 +8,17 @@ from Products.CMFDefault.formlib.schema import SchemaAdapterBase
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 
 from plone.registry.interfaces import IRegistry
-from plone.app.controlpanel.form import ControlPanelForm
-from plone.app.controlpanel.widgets import MultiCheckBoxThreeColumnWidget
+try:
+    from plone.app.controlpanel.form import ControlPanelForm
+    from plone.app.controlpanel.widgets import MultiCheckBoxThreeColumnWidget
+
+    HAVE_PLONE5 = False
+except:
+    from plone.app.registry.browser.controlpanel import ControlPanelFormWrapper
+    from plone.app.registry.browser.controlpanel import RegistryEditForm as ControlPanelForm
+    from plone.z3cform import layout
+    HAVE_PLONE5 = True
+
 
 from collective.jekyll import jekyllMessageFactory as _
 from collective.jekyll.interfaces import IJekyllSettings
@@ -48,10 +57,30 @@ class JekyllControlPanelAdapter(SchemaAdapterBase):
 class JekyllControlPanel(ControlPanelForm):
 
     label = _("Content quality")
-    description = _("You can activate / deactivate symptoms using this form.")
+    description = _(
+        "You can activate / deactivate symptoms using this form.")
     form_name = _("Symptoms activation")
 
-    form_fields = form.FormFields(IJekyllSettings)
-    active_symptoms = form_fields['activeSymptoms']
-    active_symptoms.custom_widget = MultiCheckBoxThreeColumnWidget
-    active_symptoms.custom_widget.cssClass = 'label'
+    form_fields = not HAVE_PLONE5 and form.FormFields(IJekyllSettings)
+    schema = HAVE_PLONE5 and IJekyllSettings
+
+    @property
+    def active_symptoms(self,):
+        if not HAVE_PLONE5:
+            active_symptoms = form_fields['activeSymptoms']
+            active_symptoms.custom_widget = MultiCheckBoxThreeColumnWidget
+            active_symptoms.custom_widget.cssClass = 'label'
+        else:
+            active_symptoms = None
+        return active_symptoms
+    """
+    _active_symptoms = not HAVE_PLONE5 and form_fields['activeSymptoms'] or Fake(
+    )
+    _active_symptoms.custom_widget = not HAVE_PLONE5 and MultiCheckBoxThreeColumnWidget or Fake()
+    _active_symptoms.custom_widget.cssClass = 'label'
+    """
+
+
+if HAVE_PLONE5:
+    WrappedJekyllControlPanel = layout.wrap_form(
+        JekyllControlPanel, ControlPanelFormWrapper)

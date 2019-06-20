@@ -8,6 +8,8 @@
 
     <adapter factory=".controlpanel.JekyllControlPanelAdapter" />
 
+<configure zcml:condition="not-have  plone-5">
+
     <browser:page
         name="jekyll-controlpanel"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
@@ -15,6 +17,17 @@
         permission="jekyll.Diagnose"
         layer=".interfaces.IThemeSpecific"
         />
+</configure>
+<configure zcml:condition="have  plone-5">
+
+    <browser:page
+        name="jekyll-controlpanel"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        class=".controlpanel.WrappedJekyllControlPanel"
+        permission="jekyll.Diagnose"
+        layer=".interfaces.IThemeSpecific"
+        />
+</configure>
     <configure zcml:condition="installed plone.app.collection">
 
      <browser:page
