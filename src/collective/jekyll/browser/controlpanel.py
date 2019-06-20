@@ -13,7 +13,7 @@ try:
     from plone.app.controlpanel.widgets import MultiCheckBoxThreeColumnWidget
 
     HAVE_PLONE5 = False
-except:
+except ImportError:
     from plone.app.registry.browser.controlpanel import ControlPanelFormWrapper
     from plone.app.registry.browser.controlpanel import RegistryEditForm as ControlPanelForm
     from plone.z3cform import layout
@@ -61,18 +61,20 @@ class JekyllControlPanel(ControlPanelForm):
         "You can activate / deactivate symptoms using this form.")
     form_name = _("Symptoms activation")
 
-    form_fields = not HAVE_PLONE5 and form.FormFields(IJekyllSettings)
-    schema = HAVE_PLONE5 and IJekyllSettings
-
     @property
-    def active_symptoms(self,):
+    def form_fields(self,):
         if not HAVE_PLONE5:
-            active_symptoms = form_fields['activeSymptoms']
+            fields = form.FormFields(IJekyllSettings)
+            active_symptoms = fields['activeSymptoms']
             active_symptoms.custom_widget = MultiCheckBoxThreeColumnWidget
             active_symptoms.custom_widget.cssClass = 'label'
-        else:
-            active_symptoms = None
-        return active_symptoms
+            return fields
+
+    @property
+    def schema(self,):
+        if HAVE_PLONE5:
+            return IJekyllSettings
+
     """
     _active_symptoms = not HAVE_PLONE5 and form_fields['activeSymptoms'] or Fake(
     )
